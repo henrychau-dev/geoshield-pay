@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Order {
+  id                   String       @id @default(cuid())
+  reference            String       @unique
+  customerName         String
+  customerEmail        String
+  product              String
+  amount               Float
+  currency             String       @default("USD")
+  // PENDING_PRECHECK | BLOCKED | BUFFERING | CONFIRMED | VOIDED | EXPIRED | FAILED
+  status               String       @default("PENDING_PRECHECK")
+  decision             String? // PASS | BUFFER | BLOCK
+  blockedReason        String?
+  paypalOrderId        String?
+  paypalAuthorizationId String?
+  ipCountry            String?
+  ipCity               String?
+  isProxyOrVpn         Boolean      @default(false)
+  gpsCountry           String?
+  gpsLat               Float?
+  gpsLng               Float?
+  billingCountry       String?
+  shippingCountry      String?
+  accountCountry       String?
+  distanceKm           Float?
+  ruleScore            Int?
+  riskScore            Int?
+  bufferExpiresAt      DateTime?
+  riskReports          RiskReport[]
+  events               AuditLog[]
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+}
+
+model RiskReport {
+  id        String   @id @default(cuid())
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId   String
+  score     Int
+  verdict   String // ALLOW | REVIEW | DENY
+  signals   String // JSON string of signal list
+  reportZh  String
+  reportEn  String
+  model     String // e.g. gpt-4o-mini or rule-fallback
+  source    String   @default("AI") // AI | RULE_FALLBACK
+  createdAt DateTime @default(now())
+}
+
+model RuleConfigRow {
+  id        String   @id @default("default")
+  config    String // JSON serialized RuleConfig
+  updatedAt DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  order     Order?   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId   String?
+  type      String // PRECHECK | BLOCK | AUTHORIZE | BUFFER_START | CONFIRM | VOID | EXPIRE | AI_ANALYSIS | RULE_UPDATE | CAPTURE
+  message   String
+  createdAt DateTime @default(now())
+}

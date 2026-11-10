@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: geoshield-pay
+    runtime: node
+    plan: free
+    buildCommand: npm install && npx prisma generate && npx prisma db push && npm run build
+    # Render's free tier has an ephemeral disk, so the demo database is
+    # re-created and seeded on every boot — the demo is never empty.
+    startCommand: npx prisma db push --skip-generate && npx tsx scripts/seed.ts && npm run start
+    envVars:
+      - key: DATABASE_URL
+        value: file:./prod.db
+      - key: PAYPAL_ENV
+        value: sandbox
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false
+      - key: AI_BASE_URL
+        value: https://api.openai.com/v1
+      - key: AI_API_KEY
+        sync: false
+      - key: AI_MODEL
+        value: gpt-4o-mini
+      - key: DEMO_MODE
+        value: "true"
+      - key: DEMO_FALLBACK_IP
+        value: 76.102.0.10
