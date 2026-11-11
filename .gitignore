@@ -12,3 +12,7 @@ prisma/dev.db-journal
 .DS_Store
 .codebuddy/
 prisma/*.db
+demo/.cache/
+demo/audio/
+demo/*.mp4
+GeoShield-Pay-source.zip

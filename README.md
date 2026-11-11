@@ -11,6 +11,12 @@ the merchant's PayPal account health.
 
 ## Demo
 
+**▶ Watch the 2-minute demo (one continuous take, unedited):** https://youtu.be/GatrPGfM5H0
+
+Every interception in that film is a real `POST /api/risk/precheck` that wrote an order to the
+database, and the AI report is a live DeepSeek call triggered on screen. The recording pipeline
+lives in `scripts/video/` — see [`demo/README.md`](demo/README.md).
+
 **Landing** — the shield's value proposition at a glance:
 
 ![GeoShield Pay landing page](main-page.png)
