@@ -129,12 +129,12 @@ whitelists; rules hot-reload into the engine in under a second, no restart requi
 
 ## The three lines of defense
 
-| Capability | What it does | PayPal tech used |
-|---|---|---|
-| **Dual Geo-Lock** | Compares the customer's IP geolocation against their device GPS on every checkout. Proxy/VPN/hosting networks and >500 km mismatches are **hard-blocked before a PayPal order is ever created**. | Orders API v2 (`intent=AUTHORIZE`) |
-| **72h Smart Buffer Cabin** | When the account / billing / shipping countries mismatch, funds are authorized (suspended, not captured) and a 3-day countdown opens. Customer confirms → `capture`. Rejects or times out → automatic `void`, funds released, zero dispute risk. | Orders API v2 + Payments API (`authorize` / `capture` / `void`), idempotent via `PayPal-Request-Id` |
-| **AI Risk Analyst** | An LLM reads every risk signal chain (IP↔GPS distance, proxy flags, three-country mismatch, amount, cart profile) and produces a 0–100 risk score plus a bilingual (EN/ZH) fraud analysis stored on each order. Runs **fully async** — it never blocks the payment path and falls back to rule scoring if the LLM is unavailable. | Any OpenAI-compatible LLM API |
-| **Visual Rule Center** | Merchants tune thresholds and country/IP black- & whitelists; saved rules **hot-reload into the engine in under a second** — no restart, no redeploy. | — |
+| Capability                       | What it does                                                                                                                                                                                                                                                                                                                               | PayPal tech used                                                                                            |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| **Dual Geo-Lock**          | Compares the customer's IP geolocation against their device GPS on every checkout. Proxy/VPN/hosting networks and >500 km mismatches are **hard-blocked before a PayPal order is ever created**.                                                                                                                                     | Orders API v2 (`intent=AUTHORIZE`)                                                                        |
+| **72h Smart Buffer Cabin** | When the account / billing / shipping countries mismatch, funds are authorized (suspended, not captured) and a 3-day countdown opens. Customer confirms → `capture`. Rejects or times out → automatic `void`, funds released, zero dispute risk.                                                                                     | Orders API v2 + Payments API (`authorize` / `capture` / `void`), idempotent via `PayPal-Request-Id` |
+| **AI Risk Analyst**        | An LLM reads every risk signal chain (IP↔GPS distance, proxy flags, three-country mismatch, amount, cart profile) and produces a 0–100 risk score plus a bilingual (EN/ZH) fraud analysis stored on each order. Runs **fully async** — it never blocks the payment path and falls back to rule scoring if the LLM is unavailable. | Any OpenAI-compatible LLM API                                                                               |
+| **Visual Rule Center**     | Merchants tune thresholds and country/IP black- & whitelists; saved rules **hot-reload into the engine in under a second** — no restart, no redeploy.                                                                                                                                                                               | —                                                                                                          |
 
 ## Architecture
 
@@ -155,6 +155,7 @@ Checkout (GPS + form) ──► /api/risk/precheck ──► IP geo (cached) + r
 ## Quick start
 
 ### 1. Prerequisites
+
 - Node.js 18+
 - PayPal **sandbox** credentials: create a free account at
   [developer.paypal.com](https://developer.paypal.com/dashboard/applications/sandbox) and copy the
@@ -163,12 +164,14 @@ Checkout (GPS + form) ──► /api/risk/precheck ──► IP geo (cached) + r
   rule-based scoring and stays fully functional
 
 ### 2. Configure
+
 ```bash
 cp .env.example .env
 # then fill in PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET and (optionally) AI_API_KEY
 ```
 
 ### 3. Run
+
 ```bash
 npm install
 npx prisma db push      # creates the SQLite database
@@ -177,6 +180,7 @@ npm run dev             # http://localhost:3000
 ```
 
 ### 4. Demo script (2 minutes)
+
 1. **/checkout** — pick the *Honest customer* scenario → precheck passes → pay with the PayPal
    sandbox button → captured immediately.
 2. Pick the *VPN fraudster* scenario → the shield shows a Tor/proxy IP 5,800+ km from the GPS and
@@ -214,6 +218,23 @@ This repo ships a `render.yaml` blueprint: create a **New Blueprint** on
 [Render](https://dashboard.render.com), point it at this repo, and fill in the sync'd secrets
 (`PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, `AI_API_KEY`). Render builds, pushes the schema and
 starts the app automatically.
+
+## Self-hosted deployment (Docker + Cloudflare Tunnel)
+
+The production demo runs in Docker with **no public ports opened on the host** — the app is only
+reachable through an outbound Cloudflare quick tunnel:
+
+```bash
+docker compose up -d --build          # builds the standalone image, seeds demo data, starts app + tunnel
+docker compose logs tunnel | grep trycloudflare.com   # grab the public demo URL
+```
+
+- `app` — multi-stage build (`node:20-alpine`), Next.js standalone output, SQLite persisted in the
+  `geoshield-data` volume, capped at 400 MB RAM. Schema push + demo seeding happen at image build.
+- `tunnel` — `cloudflared` quick tunnel (`trycloudflare.com` URL, no account/ports needed). Quick
+  tunnel URLs rotate on restart; use a Cloudflare named tunnel for a stable domain.
+- Secrets (`PAYPAL_CLIENT_ID/SECRET`, `AI_API_KEY`) are injected via environment; without them the
+  app runs fully in demo mode with rule-based fallback scoring.
 
 ## Project layout
 
