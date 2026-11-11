@@ -241,6 +241,19 @@ This repo ships a `render.yaml` blueprint: create a **New Blueprint** on
 (`PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, `AI_API_KEY`). Render builds, pushes the schema and
 starts the app automatically.
 
+## One-click deploy on Render (free plan)
+
+The repo ships a Render Blueprint (`render.yaml`): **free web service, no disks, no cron
+jobs, no paid add-ons — nothing on this plan costs money.** The SQLite database is
+re-created and seeded on every boot, so the demo is never empty.
+
+1. On [render.com](https://render.com): **New → Blueprint**, connect `henrychau-dev/geoshield-pay`.
+2. Fill the three `sync: false` secrets when prompted: `PAYPAL_CLIENT_ID` /
+   `PAYPAL_CLIENT_SECRET` (sandbox keys from developer.paypal.com) and `AI_API_KEY`
+   (any OpenAI-compatible key; defaults target DeepSeek `deepseek-chat`).
+3. Deploy. First build takes ~3 minutes. Free instances sleep after 15 idle minutes —
+   the first request afterwards cold-starts for up to a minute.
+
 ## Self-hosted deployment (Docker + Cloudflare Tunnel)
 
 The production demo runs in Docker with **no public ports opened on the host** — the app is only
