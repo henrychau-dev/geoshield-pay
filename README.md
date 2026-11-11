@@ -9,6 +9,22 @@ funds using PayPal `AUTHORIZE` instead of capturing, and an **AI Risk Analyst** 
 plain-language fraud report for every single order — cutting chargebacks by 85%+ and protecting
 the merchant's PayPal account health.
 
+## Demo
+
+**Landing** — the shield's value proposition at a glance:
+
+![GeoShield Pay landing page](main-page.png)
+
+**Checkout** — GPS + IP verification panel with the deterministic demo scenario selector
+(honest customer, VPN fraudster, three-country mismatch, blacklisted IP, high amount):
+
+![Checkout with demo scenarios](cf-demo.png)
+
+**Merchant dashboard** — Risk Command Center: pre-PayPal blocks, live 72h buffer-cabin countdown,
+and every interception with its risk score:
+
+![Merchant risk command center](dashboard.png)
+
 ## Inspiration
 
 Every cross-border merchant we talked to has the same war story: a stolen PayPal account, a VPN
