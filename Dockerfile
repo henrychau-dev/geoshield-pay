@@ -33,6 +33,8 @@ COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/data ./data
+# /app/data is written at runtime (SQLite) — the volume must be writable by USER node
+RUN chown -R node:node /app/data
 USER node
 EXPOSE 3000
 CMD ["node", "server.js"]

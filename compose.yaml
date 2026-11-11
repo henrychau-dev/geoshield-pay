@@ -14,9 +14,9 @@ services:
       PAYPAL_ENV: sandbox
       PAYPAL_CLIENT_ID: ${PAYPAL_CLIENT_ID:-}
       PAYPAL_CLIENT_SECRET: ${PAYPAL_CLIENT_SECRET:-}
-      AI_BASE_URL: https://api.openai.com/v1
+      AI_BASE_URL: https://api.deepseek.com/v1
       AI_API_KEY: ${AI_API_KEY:-}
-      AI_MODEL: gpt-4o-mini
+      AI_MODEL: deepseek-chat
       DEMO_MODE: "true"
       DEMO_FALLBACK_IP: 76.102.0.10
     volumes:
