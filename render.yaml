@@ -2,14 +2,10 @@ services:
   - type: web
     name: geoshield-pay
     runtime: node
-    # Free plan only: no disks, no cron jobs, no paid add-ons anywhere below.
     plan: free
-    healthCheckPath: /api/paypal/config
     buildCommand: npm install && npx prisma generate && npx prisma db push && npm run build
     # Render's free tier has an ephemeral disk, so the demo database is
     # re-created and seeded on every boot — the demo is never empty.
-    # Free instances sleep after 15 idle minutes; the next request cold-starts
-    # for up to a minute.
     startCommand: npx prisma db push --skip-generate && npx tsx scripts/seed.ts && npm run start
     envVars:
       - key: DATABASE_URL
@@ -20,14 +16,12 @@ services:
         sync: false
       - key: PAYPAL_CLIENT_SECRET
         sync: false
-      # LLM risk analyst — any OpenAI-compatible endpoint. Defaults target
-      # DeepSeek; paste your own key in the Render dashboard (never commit it).
       - key: AI_BASE_URL
-        value: https://api.deepseek.com/v1
+        value: https://api.openai.com/v1
       - key: AI_API_KEY
         sync: false
       - key: AI_MODEL
-        value: deepseek-chat
+        value: gpt-4o-mini
       - key: DEMO_MODE
         value: "true"
       - key: DEMO_FALLBACK_IP
