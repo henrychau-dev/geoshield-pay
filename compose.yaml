@@ -1,0 +1,34 @@
+# GeoShield Pay — server deployment via Cloudflare quick tunnel.
+# Nothing is published to the host network: the app is only reachable
+# through the outbound cloudflared tunnel (trycloudflare.com URL).
+services:
+  app:
+    build: .
+    image: geoshield-pay
+    restart: unless-stopped
+    mem_limit: 400m
+    expose:
+      - "3000"
+    environment:
+      DATABASE_URL: file:/app/data/prod.db
+      PAYPAL_ENV: sandbox
+      PAYPAL_CLIENT_ID: ${PAYPAL_CLIENT_ID:-}
+      PAYPAL_CLIENT_SECRET: ${PAYPAL_CLIENT_SECRET:-}
+      AI_BASE_URL: https://api.openai.com/v1
+      AI_API_KEY: ${AI_API_KEY:-}
+      AI_MODEL: gpt-4o-mini
+      DEMO_MODE: "true"
+      DEMO_FALLBACK_IP: 76.102.0.10
+    volumes:
+      - geoshield-data:/app/data
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate --url http://app:3000
+    restart: unless-stopped
+    depends_on:
+      - app
+    mem_limit: 128m
+
+volumes:
+  geoshield-data:

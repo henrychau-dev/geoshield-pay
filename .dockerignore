@@ -1,0 +1,13 @@
+node_modules
+.next
+.git
+.gitignore
+data
+*.db
+*.db-journal
+.env
+.env.*
+!.env.example
+*.log
+render.yaml
+.codebuddy
