@@ -248,9 +248,11 @@ jobs, no paid add-ons — nothing on this plan costs money.** The SQLite databas
 re-created and seeded on every boot, so the demo is never empty.
 
 1. On [render.com](https://render.com): **New → Blueprint**, connect `henrychau-dev/geoshield-pay`.
-2. Fill the three `sync: false` secrets when prompted: `PAYPAL_CLIENT_ID` /
-   `PAYPAL_CLIENT_SECRET` (sandbox keys from developer.paypal.com) and `AI_API_KEY`
-   (any OpenAI-compatible key; defaults target DeepSeek `deepseek-chat`).
+2. Fill the secrets when prompted: `PAYPAL_CLIENT_ID` / `PAYPAL_CLIENT_SECRET`
+   (sandbox keys from developer.paypal.com). `AI_API_KEY` is **optional** — leave it
+   empty to run without any LLM credential: the AI panel then serves the
+   clearly-labelled deterministic rule-fallback report, while seeded orders still
+   carry full AI narratives. Defaults target DeepSeek `deepseek-chat` when a key is set.
 3. Deploy. First build takes ~3 minutes. Free instances sleep after 15 idle minutes —
    the first request afterwards cold-starts for up to a minute.
 

@@ -21,7 +21,9 @@ services:
       - key: PAYPAL_CLIENT_SECRET
         sync: false
       # LLM risk analyst — any OpenAI-compatible endpoint. Defaults target
-      # DeepSeek; paste your own key in the Render dashboard (never commit it).
+      # DeepSeek. Paste your own key in the Render dashboard (never commit it),
+      # or leave it EMPTY to run in demo mode: the AI panel then serves the
+      # clearly-labelled deterministic rule-fallback report.
       - key: AI_BASE_URL
         value: https://api.deepseek.com/v1
       - key: AI_API_KEY
