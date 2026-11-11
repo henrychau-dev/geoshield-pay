@@ -29,15 +29,16 @@ export default function RulesPage() {
   }, [justSaved]);
 
   function patch(p: Partial<RuleConfig>) {
-    setRules((r) => (r ? { ...r, ...p, ...nested(r, p) } : r));
-  }
-
-  function nested(cur: RuleConfig, p: Partial<RuleConfig>): Partial<RuleConfig> {
-    return {
-      geoLock: p.geoLock ? { ...cur.geoLock, ...p.geoLock } : undefined,
-      bufferCabin: p.bufferCabin ? { ...cur.bufferCabin, ...p.bufferCabin } : undefined,
-      thresholds: p.thresholds ? { ...cur.thresholds, ...p.thresholds } : undefined,
-    } as Partial<RuleConfig>;
+    setRules((r) => {
+      if (!r) return r;
+      const next: RuleConfig = { ...r };
+      if (p.geoLock) next.geoLock = { ...r.geoLock, ...p.geoLock };
+      if (p.bufferCabin) next.bufferCabin = { ...r.bufferCabin, ...p.bufferCabin };
+      if (p.thresholds) next.thresholds = { ...r.thresholds, ...p.thresholds };
+      if (p.blacklists) next.blacklists = { ...r.blacklists, ...p.blacklists };
+      if (p.whitelists) next.whitelists = { ...r.whitelists, ...p.whitelists };
+      return next;
+    });
   }
 
   async function save() {
